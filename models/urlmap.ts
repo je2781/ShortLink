@@ -3,15 +3,15 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const UrlMapSchema = new Schema({
-  short: {
+  shortId: {
     type: String,
     required: true,
   },
-  long: {
+  longUrl: {
     type: String,
     required: true,
   },
-});
+}, {timestamps: true});
 
 const mapModel = mongoose.model("urlmaps", UrlMapSchema);
 

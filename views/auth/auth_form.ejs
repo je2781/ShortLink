@@ -1,0 +1,69 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/form.css">
+
+
+</head>
+<body>
+    <%- include('../includes/nav.ejs') %>
+    <main>
+        <form class='auth-form' method="POST" action="/<%= mode === 'login' ? 'login' : 'signup' %>" 
+            novalidate>
+            <% if(errorMsg) { %>
+            <p class="user-message user-message--error"><%= errorMsg %></p>
+            <% } %>
+            <% if(mode === 'signup') { %>
+            <p>
+                <div class="form-control">
+                    <label for="fName">Full Name</label>
+                    <input 
+                    class="<%= validationErrors.find(e => e.path === 'fName') ? 'invalid' : '' %>"
+                    type="text" 
+                    name="fName" 
+                    id="fName" 
+                    value="<%= oldInput.fName %>"/>
+                </div>
+            </p>
+            <% } %>
+            <p>
+                <div class="form-control">
+                    <label for="email">Email</label>
+                    <input 
+                    class="<%= validationErrors.find(e => e.path === 'email') ? 'invalid' : '' %>"
+                    type="email" 
+                    name="email" 
+                    id="email" 
+                    value="<%= oldInput.email %>"/>
+                </div>
+            </p>
+            <p>
+                <div class="form-control">
+                    <label for="password">Password</label>
+                    <input 
+                    class="<%= validationErrors.find(e => e.path === 'password') ? 'invalid' : '' %>"
+                    type="password" 
+                    name="password" 
+                    id="password" 
+                    value="<%= oldInput.password %>"/>
+                </div>
+            </p>
+            <% if(mode === 'signup') { %>
+            <p>
+                <div class="form-control">
+                    <label for="c_password">Confirm Password</label>
+                    <input 
+                    class="<%= validationErrors.find(e => e.path === 'c_password') ? 'invalid' : '' %>"
+                    type="password" 
+                    name="c_password" 
+                    id="c_password" 
+                    value="<%= oldInput.confirmPassword %>"/>
+                </div>
+            </p>
+            <% } %>
+            <div class="action">
+
+                <button type="submit"><%= mode === 'signup' ? 'SIGN UP' : 'LOG IN' %></button>
+            </div>
+        </form>
+    </main>
+<%- include('../includes/end.ejs') %>
+

@@ -9,7 +9,7 @@ const get500Page = (error, req, res, next) => {
     });
 };
 exports.get500Page = get500Page;
-const getPageNotFound = (error, req, res, next) => {
+const getPageNotFound = (req, res, next) => {
     res.status(404).render('404', {
         docTitle: 'NotFound',
         path: '/404',

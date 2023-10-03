@@ -1,13 +1,7 @@
-import short from "short-uuid";
 import URLMap from "../models/urlmap";
-import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
 
-export const getHomePage = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getHomePage = (req: any, res: any, next: any) => {
   res.render("home", {
     docTitle: "Shortlink",
     path: "/",
@@ -18,18 +12,13 @@ export const getHomePage = (
   });
 };
 
-export const encode = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const encode = async (req: any, res: any, next: any) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
     return res.status(422).render("home", {
       docTitle: "Shortlink",
       path: "/",
-      editing: "true",
       Msg: errors.array()[0].msg,
       hasErrorMsg: true,
       hasMessage: false,
@@ -37,65 +26,48 @@ export const encode = async (
     });
   }
 
-  // Create an instance of short-uuid
-  const uuidTranslator = short();
-
-  // Generate a new short UUID
-  const shortId = uuidTranslator.new();
-  let shortUrl = "";
-
-  const longUrl = req.body.longUrl as string;
-
-  if (longUrl.includes("https")) {
-    shortUrl = "https://short.est/" + shortId;
-  } else {
-    shortUrl = "http://short.est/" + shortId;
-  }
+  const longUrl = req.body.longUrl;
 
   //collection for storing URL mappings
   const map = new URLMap({
-    short: shortUrl,
-    long: longUrl,
+    shortId: req.session.shortId,
+    longUrl: longUrl,
   });
 
   try {
     await map.save();
-  } catch (err: any) {
-    if (!err.code) {
-      err.code = 500;
-    }
+  } catch (err) {
     return next(err);
   } finally {
-    res
-      .status(201)
-      .json({ encodedUrl: shortUrl, message: "url successfully shortened" });
+    res.status(201).redirect("/success");
   }
 };
 
+export const getSuccess = async (req: any, res: any, next: any) => {
+  res.render("success", {
+    docTitle: "Success",
+    path: "/success",
+    shortId: req.session.shortId,
+  });
+};
+
 // Create a route for redirecting short URLs
-export const decode = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const decode = async (req: any, res: any, next: any) => {
   try {
-    const shortUrl = req.params.shortUrl;
-    const map = await URLMap.findOne({ short: shortUrl });
+    const shortId = req.params.shortid;
+    const map = await URLMap.findOne({shortId: shortId});
 
     if (!map) {
       const error = new Error("url pairing not found!");
       return next(error);
     }
-    const longUrl = map.long;
+    const longUrl = map.longUrl;
     if (longUrl) {
       res.redirect(longUrl);
     } else {
       res.status(404).json({ error: "URL not found" });
     }
-  } catch (err: any) {
-    if (!err.code) {
-      err.code = 500;
-    }
+  } catch (err) {
     return next(err);
   }
 };

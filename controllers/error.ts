@@ -8,7 +8,7 @@ export const get500Page = (error: Error, req: Request, res: Response, next: Next
     });
   }
 
-  export const getPageNotFound = (error: Error, req: Request, res: Response, next: NextFunction) => {
+  export const getPageNotFound = (req: Request, res: Response, next: NextFunction) => {
     res.status(404).render('404', 
     {
         docTitle: 'NotFound', 

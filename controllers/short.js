@@ -12,8 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.decode = exports.encode = exports.getHomePage = void 0;
-const short_uuid_1 = __importDefault(require("short-uuid"));
+exports.decode = exports.getSuccess = exports.encode = exports.getHomePage = void 0;
 const urlmap_1 = __importDefault(require("../models/urlmap"));
 const express_validator_1 = require("express-validator");
 const getHomePage = (req, res, next) => {
@@ -33,56 +32,47 @@ const encode = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         return res.status(422).render("home", {
             docTitle: "Shortlink",
             path: "/",
-            editing: "true",
             Msg: errors.array()[0].msg,
             hasErrorMsg: true,
             hasMessage: false,
             validationErrors: errors.array(),
         });
     }
-    // Create an instance of short-uuid
-    const uuidTranslator = (0, short_uuid_1.default)();
-    // Generate a new short UUID
-    const shortId = uuidTranslator.new();
-    let shortUrl = "";
     const longUrl = req.body.longUrl;
-    if (longUrl.includes("https")) {
-        shortUrl = "https://short.est/" + shortId;
-    }
-    else {
-        shortUrl = "http://short.est/" + shortId;
-    }
     //collection for storing URL mappings
     const map = new urlmap_1.default({
-        short: shortUrl,
-        long: longUrl,
+        shortId: req.session.shortId,
+        longUrl: longUrl,
     });
     try {
         yield map.save();
     }
     catch (err) {
-        if (!err.code) {
-            err.code = 500;
-        }
         return next(err);
     }
     finally {
-        res
-            .status(201)
-            .json({ encodedUrl: shortUrl, message: "url successfully shortened" });
+        res.status(201).redirect("/success");
     }
 });
 exports.encode = encode;
+const getSuccess = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    res.render("success", {
+        docTitle: "Success",
+        path: "/success",
+        shortId: req.session.shortId,
+    });
+});
+exports.getSuccess = getSuccess;
 // Create a route for redirecting short URLs
 const decode = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const shortUrl = req.params.shortUrl;
-        const map = yield urlmap_1.default.findOne({ short: shortUrl });
+        const shortId = req.params.shortid;
+        const map = yield urlmap_1.default.findOne({ shortId: shortId });
         if (!map) {
             const error = new Error("url pairing not found!");
             return next(error);
         }
-        const longUrl = map.long;
+        const longUrl = map.longUrl;
         if (longUrl) {
             res.redirect(longUrl);
         }
@@ -91,9 +81,6 @@ const decode = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         }
     }
     catch (err) {
-        if (!err.code) {
-            err.code = 500;
-        }
         return next(err);
     }
 });
