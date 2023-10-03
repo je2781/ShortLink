@@ -1,13 +1,11 @@
 {
-    "extends": "@tsconfig/node-lts/tsconfig.json",
-    "compilerOptions": {
-      "outDir": "dist",
-      "target": "es6",
-      "strict": true,
-      "module": "CommonJS",
-      "moduleResolution": "node"
-    },
-    "include": ["src"],
-    "exclude": ["node_modules"]
-  }
-  
+  "extends": "@tsconfig/node-lts/tsconfig.json",
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "exclude": ["node_modules"]
+}

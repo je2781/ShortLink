@@ -1,10 +1,12 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import serverless from 'serverless-http';
+import path from 'path';
 import mongoose from 'mongoose';
 require("dotenv").config();
 
-const shortRoutes = require('../routes/shortest');
+import shortRoutes from '../routes/shortest';
+import { get500Page, getPageNotFound} from '../controllers/error';
 
 const app = express();
 
@@ -12,6 +14,8 @@ const app = express();
 app.use(bodyParser.json());
 //parsing body of client request - only for text requests
 app.use(bodyParser.urlencoded({ extended: false }));
+//funneling static files request to public folder
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 //express app config settings
 app.set('view engine', 'ejs');
@@ -27,15 +31,14 @@ app.use((req, res, next) => {
 app.use(shortRoutes);
 
 
-app.use((error, req, res, next) => {
-  res.status(500).render('500', 
-  {
-      docTitle: 'Server Error', 
-      path: '/500',
-      msg: error.message
-  });
-});
+app.use(getPageNotFound);
+app.use(get500Page);
 
-mongoose.connect(process.env.MONGODB_URI!).then((_) => console.log('connected to database'));
 
-module.exports.handler = serverless(app);
+mongoose.connect(process.env.MONGODB_URI!).then((_) => {
+  console.log('connected to database')
+  app.listen(3000);
+}
+  );
+
+// module.exports.handler = serverless(app);

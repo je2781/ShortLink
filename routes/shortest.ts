@@ -1,10 +1,11 @@
-const express = require("express");
+import express from "express";
+import {decode, encode, getHomePage} from "../controllers/short";
+import { body } from "express-validator";
+
 const router = express.Router();
-const ShortController = require("../controllers/short");
-const { body } = require("express-validator");
 
 // POST /short/decode
-router.post("/decode", ShortController.decode);
+router.post("/decode", decode);
 
 // POST /short/encode
 router.post(
@@ -13,13 +14,13 @@ router.post(
     protocols: ["http", "https", "ftp"],
     require_valid_protocol: true,
   }),
-  ShortController.encode
+  encode
 );
 
 // GEt /short/statistic/:shortid
 router.get("/statistic/:shortid");
 
 // GEt /
-router.get("/", ShortController.getHomePage);
+router.get("/", getHomePage);
 
-module.exports = router;
+export default router;
