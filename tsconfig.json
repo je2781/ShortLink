@@ -4,10 +4,10 @@
     "target": "es2016",
     "module": "commonjs",
     "moduleResolution": "node",
-    "strict": true,
+    "rootDir": "./src",
     "skipLibCheck": true,
+    "strict": true,
     "lib": ["DOM"]
   },
-  
   "exclude": ["node_modules"]
 }

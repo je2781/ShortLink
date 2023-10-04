@@ -1,4 +1,6 @@
 /node_modules
-.env.local
+.env
+jest.config.js
+dist
 # Local Netlify folder
 .netlify
