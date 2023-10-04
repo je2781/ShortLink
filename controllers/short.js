@@ -12,11 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.decode = exports.getSuccess = exports.encode = exports.getHomePage = void 0;
+exports.decode = exports.getSuccess = exports.encode = exports.getStats = exports.getHomePage = void 0;
 const urlmap_1 = __importDefault(require("../models/urlmap"));
 const express_validator_1 = require("express-validator");
 const getHomePage = (req, res, next) => {
-    res.render("home", {
+    res.status(200).render("home", {
         docTitle: "Shortlink",
         path: "/",
         hasErrorMsg: false,
@@ -26,6 +26,21 @@ const getHomePage = (req, res, next) => {
     });
 };
 exports.getHomePage = getHomePage;
+const getStats = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const shortId = req.params.shortid;
+    const map = yield urlmap_1.default.findOne({ shortId: shortId });
+    if (!map) {
+        const error = new Error("url pairing not found!");
+        return next(error);
+    }
+    res.status(200).json({
+        createdAt: map.createdAt.toLocaleTimeString("us"),
+        uniqueId: map._id.toString(),
+        originalUrl: map.longUrl,
+        hasEncryption: map.longUrl.includes('https') ? true : false
+    });
+});
+exports.getStats = getStats;
 const encode = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
@@ -56,7 +71,7 @@ const encode = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.encode = encode;
 const getSuccess = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.render("success", {
+    res.status(200).render("success", {
         docTitle: "Success",
         path: "/success",
         shortId: req.session.shortId,
@@ -74,7 +89,7 @@ const decode = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         }
         const longUrl = map.longUrl;
         if (longUrl) {
-            res.redirect(longUrl);
+            res.status(200).redirect(longUrl);
         }
         else {
             res.status(404).json({ error: "URL not found" });

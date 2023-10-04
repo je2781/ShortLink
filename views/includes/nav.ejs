@@ -1,10 +1,10 @@
 <div class="backdrop"></div>
 <header class="main-header">
-<div class="brand__nav">
+<div class="brand__nav" data-testid="navbar-brand">
     <span>Shortlink</span>
     <i class="fa-solid fa-link"></i>
 </div>
-<i class="fa-solid fa-bars"  id="side-menu-toggle"></i>
+<i class="fa-solid fa-bars" id="side-menu-toggle" data-testid="navber-toggle"></i>
 <nav class="main-header__nav">
     <ul class="main-header__item-list">
         <% if (!isAuthenticated) { %>

@@ -17,10 +17,10 @@ router.post("/encode", route_protection_1.isAuth, (0, express_validator_1.body)(
 }), short_1.encode);
 // GET /short/decode
 router.get("/decode/:shortid", route_protection_1.isAuth, short_1.decode);
-// GEt /short/statistic/:shortid
-router.get("/statistic/:shortid", route_protection_1.isAuth);
 // GEt /
 router.get("/", route_protection_1.isAuth, short_1.getHomePage);
 // GEt /
 router.get("/success", route_protection_1.isAuth, short_1.getSuccess);
+// GEt /
+router.get("/statistic/:shortId", route_protection_1.isAuth, short_1.getStats);
 exports.default = router;

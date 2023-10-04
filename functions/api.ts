@@ -58,3 +58,4 @@ mongoose.connect(process.env.MONGODB_URI!).then((_) => {
 });
 
 // module.exports.handler = serverless(app);
+export default app;

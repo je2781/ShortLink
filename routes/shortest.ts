@@ -1,5 +1,5 @@
 import express from "express";
-import {decode, encode, getHomePage, getSuccess} from "../controllers/short";
+import {decode, encode, getHomePage, getSuccess, getStats} from "../controllers/short";
 import { body } from "express-validator";
 import { isAuth } from "../util/route_protection";
 
@@ -23,14 +23,14 @@ router.post(
 // GET /short/decode
 router.get("/decode/:shortid", isAuth, decode);
 
-// GEt /short/statistic/:shortid
-router.get("/statistic/:shortid", isAuth);
-
 // GEt /
 router.get("/", isAuth, getHomePage);
 
 // GEt /
 router.get("/success", isAuth, getSuccess);
+
+// GEt /
+router.get("/statistic/:shortId", isAuth, getStats);
 
 
 export default router;

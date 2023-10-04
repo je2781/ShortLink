@@ -49,3 +49,4 @@ mongoose_1.default.connect(process.env.MONGODB_URI).then((_) => {
     app.listen(8000);
 });
 // module.exports.handler = serverless(app);
+exports.default = app;

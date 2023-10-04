@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -19,7 +28,7 @@ var transport = nodemailer_1.default.createTransport({
 });
 const getLogin = (req, res, next) => {
     // const isLoggedIn = req.get('Cookie').split(':')[1].trim().split('=')[1] === 'true';
-    res.render("auth/auth_form.ejs", {
+    res.status(200).render("auth/auth_form.ejs", {
         docTitle: "Login",
         mode: "login",
         errorMsg: null,
@@ -33,7 +42,7 @@ const getLogin = (req, res, next) => {
 };
 exports.getLogin = getLogin;
 const getSignup = (req, res, next) => {
-    res.render("auth/auth_form.ejs", {
+    res.status(200).render("auth/auth_form.ejs", {
         docTitle: "Signup",
         mode: "signup",
         errorMsg: null,
@@ -47,7 +56,7 @@ const getSignup = (req, res, next) => {
     });
 };
 exports.getSignup = getSignup;
-const postSignup = (req, res, next) => {
+const postSignup = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const email = req.body.email;
     const password = req.body.password;
     const fullName = req.body.fName;
@@ -67,31 +76,30 @@ const postSignup = (req, res, next) => {
             validationErrors: errors.array(),
         });
     }
-    bcryptjs_1.default
-        .hash(password, 12)
-        .then((hashedPassword) => {
+    try {
+        const hashedPassword = yield bcryptjs_1.default.hash(password, 12);
         const newUser = new user_1.default({
             email: email,
             password: hashedPassword,
             fullName: fullName,
         });
-        return newUser.save();
-    })
-        .then(() => {
-        res.redirect("/login");
-        return transport.sendMail({
+        const savedUser = yield newUser.save();
+        yield transport.sendMail({
             from: "sender@yourdomain.com",
             to: email,
             subject: "Signup Succeeded!",
             html: "<h1>You have successfully signed up</h1>",
         });
-    })
-        .catch((err) => {
+    }
+    catch (err) {
         return next(err);
-    });
-};
+    }
+    finally {
+        res.redirect("/login");
+    }
+});
 exports.postSignup = postSignup;
-const postLogin = (req, res, next) => {
+const postLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
         return res.status(422).render("auth/auth_form.ejs", {
@@ -107,17 +115,17 @@ const postLogin = (req, res, next) => {
             validationErrors: errors.array(),
         });
     }
-    // Create an instance of short-uuid
-    const uuidTranslator = (0, short_uuid_1.default)();
-    // Generate a new short UUID
-    const shortId = uuidTranslator.new();
-    user_1.default.findOne({ email: req.body.email })
-        .then((user) => {
+    try {
+        // Create an instance of short-uuid
+        const uuidTranslator = (0, short_uuid_1.default)();
+        // Generate a new short UUID
+        const shortId = uuidTranslator.new();
+        const user = yield user_1.default.findOne({ email: req.body.email });
         if (!user) {
             return res.status(422).render("auth/auth_form.ejs", {
                 docTitle: "Login",
                 mode: "login",
-                errorMsg: "invalid E-mail or password",
+                errorMsg: "User account doesn't exist. Create an account",
                 path: "/login",
                 oldInput: {
                     email: req.body.email,
@@ -127,39 +135,38 @@ const postLogin = (req, res, next) => {
                 validationErrors: [],
             });
         }
-        return bcryptjs_1.default
-            .compare(req.body.password, user.password)
-            .then((doMatch) => {
-            if (doMatch) {
-                req.session.isLoggedIn = true;
-                req.session.shortId = shortId;
-                req.session.user = user;
-                return req.session.save(() => { });
-            }
-            res.status(422).render("auth/auth_form.ejs", {
-                docTitle: "Login",
-                mode: "login",
-                errorMsg: "invalid E-mail or password",
-                path: "/login",
-                oldInput: {
-                    email: req.body.email,
-                    password: req.body.password,
-                    fullName: req.body.fName,
-                },
-                validationErrors: [],
+        const doMatch = yield bcryptjs_1.default.compare(req.body.password, user.password);
+        if (doMatch) {
+            req.session.isLoggedIn = true;
+            req.session.shortId = shortId;
+            req.session.user = user;
+            return req.session.save(() => {
+                res.status(200).redirect("/");
             });
+        }
+        res.status(422).render("auth/auth_form.ejs", {
+            docTitle: "Login",
+            mode: "login",
+            errorMsg: "invalid E-mail or password",
+            path: "/login",
+            oldInput: {
+                email: req.body.email,
+                password: req.body.password,
+                fullName: req.body.fName,
+            },
+            validationErrors: [],
         });
-    })
-        .catch((err) => {
+    }
+    catch (err) {
         return next(err);
-    });
-};
+    }
+});
 exports.postLogin = postLogin;
 const postLogout = (req, res, next) => {
     req.session.destroy((err) => {
         if (err)
             return next(err);
-        res.redirect("/login");
+        res.status(200).redirect("/login");
     });
 };
 exports.postLogout = postLogout;
