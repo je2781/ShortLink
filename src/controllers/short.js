@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.decode = exports.getSuccess = exports.encode = exports.getStats = exports.getHomePage = void 0;
 const urlmap_1 = __importDefault(require("../models/urlmap"));
+const short_uuid_1 = __importDefault(require("short-uuid"));
 const express_validator_1 = require("express-validator");
 const getHomePage = (req, res, next) => {
     res.status(200).render("home", {
@@ -36,7 +37,7 @@ const getStats = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     res.status(302).json({
         createdAt: map.createdAt.toLocaleDateString("en-US"),
         originalUrl: map.longUrl,
-        hasEncryption: map.longUrl.includes('https') ? true : false
+        hasEncryption: map.longUrl.includes("https") ? true : false,
     });
 });
 exports.getStats = getStats;
@@ -53,9 +54,15 @@ const encode = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         });
     }
     const longUrl = req.body.longUrl;
+    // Create an instance of short-uuid
+    const uuidTranslator = (0, short_uuid_1.default)();
+    // Generate a new short UUID
+    const shortId = uuidTranslator.new();
+    //storing shortid in session object to pass onto other middleware
+    req.session.shortId = shortId;
     //collection for storing URL mappings
     const map = new urlmap_1.default({
-        shortId: req.session.shortId,
+        shortId: shortId,
         longUrl: longUrl,
     });
     try {
@@ -65,7 +72,9 @@ const encode = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         return next(err);
     }
     finally {
-        res.status(302).redirect("/success");
+        req.session.save(() => {
+            res.status(302).redirect("/success");
+        });
     }
 });
 exports.encode = encode;

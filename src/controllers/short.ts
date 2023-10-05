@@ -1,4 +1,5 @@
 import URLMap from "../models/urlmap";
+import short from "short-uuid";
 import { validationResult } from "express-validator";
 
 export const getHomePage = (req: any, res: any, next: any) => {
@@ -14,18 +15,18 @@ export const getHomePage = (req: any, res: any, next: any) => {
 
 export const getStats = async (req: any, res: any, next: any) => {
   const shortId = req.params.shortid;
-    const map = await URLMap.findOne({shortId: shortId});
+  const map = await URLMap.findOne({ shortId: shortId });
 
-    if (!map) {
-      const error = new Error("url pairing not found!");
-      return next(error);
-    }
+  if (!map) {
+    const error = new Error("url pairing not found!");
+    return next(error);
+  }
 
-    res.status(302).json({
-      createdAt: map.createdAt.toLocaleDateString("en-US"),
-      originalUrl: map.longUrl,
-      hasEncryption: map.longUrl.includes('https') ? true : false 
-    });
+  res.status(302).json({
+    createdAt: map.createdAt.toLocaleDateString("en-US"),
+    originalUrl: map.longUrl,
+    hasEncryption: map.longUrl.includes("https") ? true : false,
+  });
 };
 
 export const encode = async (req: any, res: any, next: any) => {
@@ -44,9 +45,17 @@ export const encode = async (req: any, res: any, next: any) => {
 
   const longUrl = req.body.longUrl;
 
+  // Create an instance of short-uuid
+  const uuidTranslator = short();
+
+  // Generate a new short UUID
+  const shortId = uuidTranslator.new();
+  //storing shortid in session object to pass onto other middleware
+  req.session.shortId = shortId;
+
   //collection for storing URL mappings
   const map = new URLMap({
-    shortId: req.session.shortId,
+    shortId: shortId,
     longUrl: longUrl,
   });
 
@@ -55,7 +64,9 @@ export const encode = async (req: any, res: any, next: any) => {
   } catch (err) {
     return next(err);
   } finally {
-    res.status(302).redirect("/success");
+    req.session.save(() => {
+      res.status(302).redirect("/success");
+    });
   }
 };
 
@@ -71,7 +82,7 @@ export const getSuccess = async (req: any, res: any, next: any) => {
 export const decode = async (req: any, res: any, next: any) => {
   try {
     const shortId = req.params.shortid;
-    const map = await URLMap.findOne({shortId: shortId});
+    const map = await URLMap.findOne({ shortId: shortId });
 
     if (!map) {
       const error = new Error("url pairing not found!");

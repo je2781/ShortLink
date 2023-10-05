@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.postLogout = exports.postLogin = exports.postSignup = exports.getSignup = exports.getLogin = void 0;
 const express_validator_1 = require("express-validator");
 const nodemailer_1 = __importDefault(require("nodemailer"));
-const short_uuid_1 = __importDefault(require("short-uuid"));
 const user_1 = __importDefault(require("../models/user"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 var transport = nodemailer_1.default.createTransport({
@@ -114,10 +113,6 @@ const postLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         });
     }
     try {
-        // Create an instance of short-uuid
-        const uuidTranslator = (0, short_uuid_1.default)();
-        // Generate a new short UUID
-        const shortId = uuidTranslator.new();
         const user = yield user_1.default.findOne({ email: req.body.email });
         if (!user) {
             return res.status(422).render("auth/auth_form.ejs", {
@@ -135,7 +130,6 @@ const postLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         const doMatch = yield bcryptjs_1.default.compare(req.body.password, user.password);
         if (doMatch) {
             req.session.isLoggedIn = true;
-            req.session.shortId = shortId;
             req.session.user = user;
             return req.session.save(() => {
                 res.status(302).redirect("/");

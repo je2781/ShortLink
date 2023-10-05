@@ -1,6 +1,5 @@
 import { validationResult } from "express-validator";
 import nodemailer from "nodemailer";
-import short from "short-uuid";
 import User from "../models/user";
 import bcrypt from "bcryptjs";
 
@@ -107,12 +106,6 @@ export const postLogin = async (req: any, res: any, next: any) => {
   }
 
   try {
-    // Create an instance of short-uuid
-    const uuidTranslator = short();
-
-    // Generate a new short UUID
-    const shortId = uuidTranslator.new();
-
     const user = await User.findOne({ email: req.body.email });
 
     if (!user) {
@@ -133,7 +126,6 @@ export const postLogin = async (req: any, res: any, next: any) => {
 
     if (doMatch) {
       req.session.isLoggedIn = true;
-      req.session.shortId = shortId;
       req.session.user = user;
       return req.session.save(() => {
         res.status(302).redirect("/");
