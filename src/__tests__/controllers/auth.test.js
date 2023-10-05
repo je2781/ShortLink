@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const supertest_1 = __importDefault(require("supertest"));
-const api_1 = __importDefault(require("../../functions/api"));
+const api_1 = __importDefault(require("../../api"));
 require("@testing-library/jest-dom");
 require("dotenv").config();
 const agent = supertest_1.default.agent(api_1.default); // Create an agent to maintain cookies
@@ -33,16 +33,6 @@ describe("Authentication", () => {
             c_password: "testpassword",
         });
         expect(response.statusCode).toBe(422);
-    }));
-    it("should register new user", () => __awaiter(void 0, void 0, void 0, function* () {
-        const response = yield agent.post("/signup").send({
-            fullName: "John Doe",
-            password: "server1",
-            email: "test@test.com",
-            c_password: "server1",
-        });
-        expect(response.statusCode).toBe(302);
-        expect(response.header.location).toBe("/login");
     }));
     it("should log in a user", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield agent

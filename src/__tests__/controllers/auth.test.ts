@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import request from "supertest";
-import app from "../../functions/api";
+import app from "../../api";
 import http from "http";
 import "@testing-library/jest-dom";
 
