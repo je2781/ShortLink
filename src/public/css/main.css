@@ -24,7 +24,10 @@ main p {
   font-size: 18px;
 }
 
-main a
+a{
+  text-decoration: none;
+  cursor: pointer;
+}
 
 i {
   margin-bottom: 1.5rem;
@@ -79,6 +82,7 @@ i {
   border: none;
   color: white;
   font-size: 1.2rem;
+  cursor: pointer;
 }
 
 .success__content a:hover,
@@ -133,6 +137,10 @@ i {
   padding: 0;
 }
 
+.mobile-nav__item button{
+  cursor: pointer;
+}
+
 .mobile-nav__item a {
   text-decoration: none;
   color: rgb(218, 210, 210);  
@@ -151,7 +159,7 @@ i {
   color: rgb(218, 210, 210);  
   cursor: pointer;
   /* float: right; */
-  padding-top: .42rem;
+  padding-top: 1rem;
 }
 
 #side-menu-toggle:focus {
@@ -167,7 +175,7 @@ i {
   color: white;
   font-size: 24px;
   display: inline-block;
-  padding-top: .42rem;
+  padding-top: 1rem;
 }
 
 .backdrop {
