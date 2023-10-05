@@ -6,7 +6,7 @@ export const getHomePage = (req: any, res: any, next: any) => {
     docTitle: "Shortlink",
     path: "/",
     hasErrorMsg: false,
-    hasMessage: false,
+    hasMsg: false,
     Msg: null,
     validationErrors: [],
   });
@@ -21,8 +21,8 @@ export const getStats = async (req: any, res: any, next: any) => {
       return next(error);
     }
 
-    res.status(200).json({
-      createdAt: map.createdAt.toLocaleTimeString("us"),
+    res.status(302).json({
+      createdAt: map.createdAt.toLocaleDateString("en-US"),
       originalUrl: map.longUrl,
       hasEncryption: map.longUrl.includes('https') ? true : false 
     });
@@ -37,7 +37,7 @@ export const encode = async (req: any, res: any, next: any) => {
       path: "/",
       Msg: errors.array()[0].msg,
       hasErrorMsg: true,
-      hasMessage: false,
+      hasMsg: false,
       validationErrors: errors.array(),
     });
   }

@@ -10,6 +10,7 @@ const connect_mongodb_session_1 = __importDefault(require("connect-mongodb-sessi
 const path_1 = __importDefault(require("path"));
 require("dotenv").config();
 const MongoDBStore = (0, connect_mongodb_session_1.default)(express_session_1.default);
+//setting up collection to store session data
 const store = new MongoDBStore({
     uri: process.env.MONGODB_URI,
     collection: "sessions",

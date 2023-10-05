@@ -30,7 +30,7 @@ router.get("/", isAuth, getHomePage);
 router.get("/success", isAuth, getSuccess);
 
 // GEt /
-router.get("/statistic/:shortId", isAuth, getStats);
+router.get("/statistic/:shortid", isAuth, getStats);
 
 
 export default router;

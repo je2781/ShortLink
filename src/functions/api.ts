@@ -7,7 +7,7 @@ import path from "path";
 require("dotenv").config();
 
 const MongoDBStore = connectMongoDBSession(session);
-
+//setting up collection to store session data
 const store = new MongoDBStore({
   uri: process.env.MONGODB_URI!,
   collection: "sessions",

@@ -9,7 +9,7 @@
         <form class='url-form' method="POST" action="/encode" 
             novalidate>
             <% if(Msg) { %>
-                <p class="<%= hasMessage ? 'user-message' : 'user-message user-message--error' %>"><%= Msg %></p>
+                <p class="<%= hasMsg ? 'user-message' : 'user-message user-message--error' %>"><%= Msg %></p>
             <% } %>
             <p>
                 <div class="form-control">

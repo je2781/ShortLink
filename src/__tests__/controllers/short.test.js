@@ -16,33 +16,129 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const supertest_1 = __importDefault(require("supertest"));
 const api_1 = __importDefault(require("../../functions/api"));
 require("@testing-library/jest-dom");
+const jsdom_1 = require("jsdom");
+const path_1 = __importDefault(require("path"));
+const ejs_1 = __importDefault(require("ejs"));
+const fs_1 = __importDefault(require("fs"));
+const successFilePath = path_1.default.resolve(__dirname, "../../views/success_mock.ejs");
+const homeFilePath = path_1.default.resolve(__dirname, "../../views/home_mock.ejs");
 require("dotenv").config();
 const agent = supertest_1.default.agent(api_1.default); // Create an agent to maintain cookies
 describe("short route", () => {
     let server;
+    let cookies;
     /* Connecting to the database before all tests. */
     beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
         yield mongoose_1.default.connect(process.env.MONGODB_URI);
-        server = api_1.default.listen(8080);
-    }));
-    /* Closing database connection and server after all tests. */
-    afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
-        yield mongoose_1.default.connection.close();
-        server.close();
+        server = api_1.default.listen(0); // Use 0 to automatically assign an available port
+        const res = yield agent
+            .post("/login") // Replace with your authentication route
+            .send({ email: "test10@test.com", password: "testpassword" });
+        // Parse and store the session cookies
+        const setCookieHeader = res.headers["set-cookie"];
+        if (Array.isArray(setCookieHeader)) {
+            cookies = setCookieHeader.map((cookieStr) => cookieStr.split(";")[0]);
+        }
+        else if (typeof setCookieHeader === "string") {
+            cookies = [setCookieHeader.split(";")[0]];
+        }
     }));
     it("should redirect to success page after generating a shortened URL", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield agent
-            .post("/encode")
-            .send({
+        // Set each session cookie in the request headers
+        cookies.forEach((cookie) => {
+            agent.set("Cookie", cookie);
+        });
+        const res = yield agent.post("/encode").send({
             longUrl: "https://example.com",
         });
         expect(res.statusCode).toBe(302);
         expect(res.header.location).toBe("/success");
     }));
     it("should redirect to original URL", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield agent
-            .get("/decode/qbzTGVJoLrqLQZfNXHDgwf");
+        // Set each session cookie in the request headers
+        cookies.forEach((cookie) => {
+            agent.set("Cookie", cookie);
+        });
+        const res = yield agent.get("/decode/8uTXFGtnp91ByL5KUMHtEB");
         expect(res.statusCode).toBe(302);
         expect(res.header.location).toBe("https://example.com");
     }));
+    it("should return stats about shortened url path", () => __awaiter(void 0, void 0, void 0, function* () {
+        // Set each session cookie in the request headers
+        cookies.forEach((cookie) => {
+            agent.set("Cookie", cookie);
+        });
+        const res = yield agent.get("/statistic/8uTXFGtnp91ByL5KUMHtEB");
+        expect(res.statusCode).toBe(302);
+        expect(res.body.createdAt).toBe("10/5/2023");
+        expect(res.body.originalUrl).toBe("https://example.com");
+        expect(res.body.hasEncryption).toBe(true);
+    }));
+    /* Closing database connection aftAll test. */
+    afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
+        yield mongoose_1.default.connection.close();
+        server.close();
+    }));
+});
+describe("Success page", () => {
+    let dom;
+    let container;
+    // Define your dynamic data
+    const dynamicData = {
+        isAuthenticated: true,
+        docTitle: "Success",
+        path: "/logout",
+        shortId: "jsc86rG9B8bygdvBDM9vxy",
+    };
+    beforeAll((done) => {
+        fs_1.default.readFile(successFilePath, "utf8", (err, template) => {
+            if (err) {
+                return done(err);
+            }
+            // Render the EJS template with the dynamic data
+            const renderedHtml = ejs_1.default.render(template, dynamicData);
+            dom = new jsdom_1.JSDOM(renderedHtml, { runScripts: "dangerously" });
+            container = dom.window.document.body;
+            done();
+        });
+    });
+    test("should show links and badge", () => {
+        // Check if container is defined before using querySelector
+        expect(container).toBeDefined();
+        expect(container.querySelector(".fa-circle-check")).toBeInTheDocument();
+        expect(container.querySelector("a[href^='/decode']")).toBeInTheDocument();
+        expect(container.querySelector("a[href^='/statistic']")).toBeInTheDocument();
+    });
+});
+describe("Home page", () => {
+    let dom;
+    let container;
+    // Define your dynamic data
+    const dynamicData = {
+        isAuthenticated: true,
+        hasErrorMsg: false,
+        hasMsg: false,
+        Msg: null,
+        docTitle: "Home page",
+        path: "/logout",
+        validationErrors: [],
+    };
+    beforeAll((done) => {
+        fs_1.default.readFile(homeFilePath, "utf8", (err, template) => {
+            if (err) {
+                return done(err);
+            }
+            // Render the EJS template with the dynamic data
+            const renderedHtml = ejs_1.default.render(template, dynamicData);
+            dom = new jsdom_1.JSDOM(renderedHtml, { runScripts: "dangerously" });
+            container = dom.window.document.body;
+            done();
+        });
+    });
+    test("should show url form with elements", () => {
+        // Check if container is defined before using querySelector
+        expect(container).toBeDefined();
+        expect(container.querySelector("#longUrl")).toBeInTheDocument();
+        expect(container.querySelector("button")).toBeInTheDocument();
+    });
 });

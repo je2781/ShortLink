@@ -20,7 +20,7 @@ const getHomePage = (req, res, next) => {
         docTitle: "Shortlink",
         path: "/",
         hasErrorMsg: false,
-        hasMessage: false,
+        hasMsg: false,
         Msg: null,
         validationErrors: [],
     });
@@ -33,9 +33,8 @@ const getStats = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         const error = new Error("url pairing not found!");
         return next(error);
     }
-    res.status(200).json({
-        createdAt: map.createdAt.toLocaleTimeString("us"),
-        uniqueId: map._id.toString(),
+    res.status(302).json({
+        createdAt: map.createdAt.toLocaleDateString("en-US"),
         originalUrl: map.longUrl,
         hasEncryption: map.longUrl.includes('https') ? true : false
     });
@@ -49,7 +48,7 @@ const encode = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
             path: "/",
             Msg: errors.array()[0].msg,
             hasErrorMsg: true,
-            hasMessage: false,
+            hasMsg: false,
             validationErrors: errors.array(),
         });
     }

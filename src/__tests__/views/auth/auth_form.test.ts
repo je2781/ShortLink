@@ -15,7 +15,7 @@ describe("Auth Form", () => {
 
   // Define your dynamic data
   const dynamicData = {
-    isAuthenticated: true,
+    isAuthenticated: false,
     mode: 'signup',
     errorMsg: undefined,
     docTitle: 'Signup',

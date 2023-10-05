@@ -150,7 +150,7 @@ i {
   font-size: 32px;
   color: rgb(218, 210, 210);  
   cursor: pointer;
-  float: right;
+  /* float: right; */
   padding-top: .42rem;
 }
 

@@ -21,21 +21,25 @@ const agent = supertest_1.default.agent(api_1.default); // Create an agent to ma
 let server;
 describe("Authentication", () => {
     /* Connecting to the database before each test. */
-    beforeEach(() => __awaiter(void 0, void 0, void 0, function* () {
+    beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
         yield mongoose_1.default.connect(process.env.MONGODB_URI);
-        server = api_1.default.listen(8081);
+        server = api_1.default.listen(0);
     }));
-    /* Closing database connection aftAll test. */
-    afterEach(() => __awaiter(void 0, void 0, void 0, function* () {
-        yield mongoose_1.default.connection.close();
-        server.close();
+    it("should show validation error because user already registered", () => __awaiter(void 0, void 0, void 0, function* () {
+        const response = yield agent.post("/signup").send({
+            fullName: "testuser",
+            password: "testpassword",
+            email: "test10@test.com",
+            c_password: "testpassword",
+        });
+        expect(response.statusCode).toBe(422);
     }));
-    it("should register a new user", () => __awaiter(void 0, void 0, void 0, function* () {
+    it("should register new user", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield agent.post("/signup").send({
             fullName: "John Doe",
             password: "server1",
             email: "test@test.com",
-            c_password: "server1"
+            c_password: "server1",
         });
         expect(response.statusCode).toBe(302);
         expect(response.header.location).toBe("/login");
@@ -46,5 +50,16 @@ describe("Authentication", () => {
             .send({ email: "test10@test.com", password: "testpassword" });
         expect(response.statusCode).toBe(302);
         expect(response.header.location).toBe("/");
+    }));
+    it("should show validation error because user doesn't exist", () => __awaiter(void 0, void 0, void 0, function* () {
+        const response = yield agent
+            .post("/login")
+            .send({ email: "test100@test.com", password: "testpassword" });
+        expect(response.statusCode).toBe(422);
+    }));
+    /* Closing database connection aftAll test. */
+    afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
+        yield mongoose_1.default.connection.close();
+        server.close();
     }));
 });
