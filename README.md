@@ -6,6 +6,6 @@ It's preferable, when using making a small app that doesn't require users' activ
 
 ## How to run the app
 
-I also used a rendering template to design a frontend for the service.
-To use just run (npm start) from the main directory. to test run (npm t).
+I also used a rendering template to design a frontend for the service, so not all endpoints return json.
+Run (npm start) from the main directory to compile for dev. To test run (npm t).
 

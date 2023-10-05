@@ -13,9 +13,9 @@ const store = new MongoDBStore({
   collection: "sessions",
 });
 
-import shortRoutes from "./routes/shortest.routes";
-import authRoutes from "./routes/auth.routes";
-import { get500Page, getPageNotFound } from "./controllers/error";
+import shortRoutes from "../routes/shortest.routes";
+import authRoutes from "../routes/auth.routes";
+import { get500Page, getPageNotFound } from "../controllers/error";
 
 const app: Application = express();
 

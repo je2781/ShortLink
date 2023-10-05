@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const supertest_1 = __importDefault(require("supertest"));
-const api_1 = __importDefault(require("../../api"));
+const api_1 = __importDefault(require("../../functions/api"));
 require("@testing-library/jest-dom");
 require("dotenv").config();
 const agent = supertest_1.default.agent(api_1.default); // Create an agent to maintain cookies

@@ -15,9 +15,9 @@ const store = new MongoDBStore({
     uri: process.env.MONGODB_URI,
     collection: "sessions",
 });
-const shortest_routes_1 = __importDefault(require("./routes/shortest.routes"));
-const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
-const error_1 = require("./controllers/error");
+const shortest_routes_1 = __importDefault(require("../routes/shortest.routes"));
+const auth_routes_1 = __importDefault(require("../routes/auth.routes"));
+const error_1 = require("../controllers/error");
 const app = (0, express_1.default)();
 //express app config settings
 app.set("view engine", "ejs");
