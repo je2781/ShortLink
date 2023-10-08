@@ -32,8 +32,8 @@ describe("short route", () => {
         yield mongoose_1.default.connect(process.env.MONGODB_URI);
         server = api_1.default.listen(0); // Use 0 to automatically assign an available port
         const res = yield agent
-            .post("/login") // Replace with your authentication route
-            .send({ email: "test10@test.com", password: "testpassword" });
+            .post("/login")
+            .send({ email: "test1000@test.com", password: "testingpassword" });
         // Parse and store the session cookies
         const setCookieHeader = res.headers["set-cookie"];
         if (Array.isArray(setCookieHeader)) {
@@ -59,7 +59,7 @@ describe("short route", () => {
         cookies.forEach((cookie) => {
             agent.set("Cookie", cookie);
         });
-        const res = yield agent.get("/decode/8uTXFGtnp91ByL5KUMHtEB");
+        const res = yield agent.get("/decode/hJHFq8awtUUPXeseHpBfyY");
         expect(res.statusCode).toBe(302);
         expect(res.header.location).toBe("https://example.com");
     }));
@@ -68,9 +68,9 @@ describe("short route", () => {
         cookies.forEach((cookie) => {
             agent.set("Cookie", cookie);
         });
-        const res = yield agent.get("/statistic/8uTXFGtnp91ByL5KUMHtEB");
+        const res = yield agent.get("/statistic/hJHFq8awtUUPXeseHpBfyY");
         expect(res.statusCode).toBe(302);
-        expect(res.body.createdAt).toBe("10/5/2023");
+        expect(res.body.createdAt).toBe("10/8/2023");
         expect(res.body.originalUrl).toBe("https://example.com");
         expect(res.body.hasEncryption).toBe(true);
     }));
@@ -88,7 +88,7 @@ describe("Success page", () => {
         isAuthenticated: true,
         docTitle: "Success",
         path: "/logout",
-        shortId: "jsc86rG9B8bygdvBDM9vxy",
+        shortId: "hJHFq8awtUUPXeseHpBfyY",
     };
     beforeAll((done) => {
         fs_1.default.readFile(successFilePath, "utf8", (err, template) => {

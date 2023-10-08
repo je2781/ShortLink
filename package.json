@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest --testTimeout=50000",
-    "start": "nodemon src/functions/server.js",
-    "build": "tsc"
+    "start": "nodemon src/functions/server.js"
   },
   "repository": {
     "type": "git",

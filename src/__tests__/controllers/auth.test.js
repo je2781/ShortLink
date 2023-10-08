@@ -27,17 +27,17 @@ describe("Authentication", () => {
     }));
     it("should show validation error because user already registered", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield agent.post("/signup").send({
-            fullName: "testuser",
-            password: "testpassword",
-            email: "test10@test.com",
-            c_password: "testpassword",
+            fullName: "testinguser",
+            password: "testingpassword",
+            email: "test1000@test.com",
+            c_password: "testingpassword",
         });
         expect(response.statusCode).toBe(422);
     }));
     it("should log in a user", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield agent
             .post("/login")
-            .send({ email: "test10@test.com", password: "testpassword" });
+            .send({ email: "test1000@test.com", password: "testingpassword" });
         expect(response.statusCode).toBe(302);
         expect(response.header.location).toBe("/");
     }));
