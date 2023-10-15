@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
 import request from "supertest";
-import app from "../../functions/api";
 import "@testing-library/jest-dom";
+import app from "../../functions/api";
+import {} from '../../controllers/short';
+import sinon from "sinon";
 import { JSDOM } from "jsdom";
 import http from "http";
 import path from "path";
@@ -10,6 +12,7 @@ import fs from "fs";
 
 const successFilePath = path.resolve(__dirname, "../../views/success_mock.ejs");
 const homeFilePath = path.resolve(__dirname, "../../views/home_mock.ejs");
+
 
 require("dotenv").config();
 const agent = request.agent(app); // Create an agent to maintain cookies
@@ -37,7 +40,7 @@ describe("short route", () => {
 
   it("should redirect to success page after generating a shortened URL", async () => {
     // Set each session cookie in the request headers
-    cookies.forEach((cookie: string[]) => {
+    cookies.forEach((cookie: string) => {
       agent.set("Cookie", cookie);
     });
     const res = await agent.post("/encode").send({
@@ -49,7 +52,7 @@ describe("short route", () => {
 
   it("should redirect to original URL", async () => {
     // Set each session cookie in the request headers
-    cookies.forEach((cookie: string[]) => {
+    cookies.forEach((cookie: string) => {
       agent.set("Cookie", cookie);
     });
     const res = await agent.get("/decode/hJHFq8awtUUPXeseHpBfyY");
@@ -59,7 +62,7 @@ describe("short route", () => {
 
   it("should return stats about shortened url path", async () => {
     // Set each session cookie in the request headers
-    cookies.forEach((cookie: string[]) => {
+    cookies.forEach((cookie: string) => {
       agent.set("Cookie", cookie);
     });
     const res = await agent.get("/statistic/hJHFq8awtUUPXeseHpBfyY");
@@ -75,6 +78,10 @@ describe("short route", () => {
     server.close();
   });
 });
+
+// describe("short controller", () => {
+//   it("it should throw an error ");
+// });
 
 describe("Success page", () => {
   let dom: JSDOM;
