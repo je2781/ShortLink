@@ -2,7 +2,7 @@
 
 I started with creating endpoints for encoding, decoding, and later finishing up the gather stats endpoint. 
 To manage authentication I used a stateful data storage system (sessions/cookies), rather than tokens. 
-It's preferable, when making a app that doesn't receive requests from multiple machines.
+It's preferable, when making an app that provides the UI for clients.
 
 ## How to run the app
 
